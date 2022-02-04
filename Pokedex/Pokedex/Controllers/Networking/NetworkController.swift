@@ -6,19 +6,20 @@
 //
 
 import Foundation
+import UIKit.UIImage
 
 class NetworkController {
     
+    
     // MARK: - URL
     static private let baseURLString = "https://pokeapi.co/api/v2"
-    //static private let urlPokeComponent = "/pokemon"
     
     // MARK: - Fetch Func
     static func fetchPokemon(name searchTerm: String, completion: @escaping (Pokemon?) -> Void ) {
         
         guard let baseURL = URL(string: baseURLString) else { return }
         var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
-        urlComponents?.path = "/pokemon/\(searchTerm.lowercased())"
+        urlComponents?.path = "/api/v2/pokemon/\(searchTerm.lowercased())"
         
         guard let finalURL = urlComponents?.url else { return }
         print(finalURL)
@@ -43,6 +44,23 @@ class NetworkController {
                 completion(nil)
             }
                     
+        }.resume()
+    }
+    // MARK: - GET IMAGE FUNC
+    static func fetchImage(fromUrl urlString: String, completion: @escaping (UIImage?) -> Void) {
+        
+        guard let finalURL = URL(string: urlString) else {
+            completion(nil); return }
+        
+        URLSession.shared.dataTask(with: finalURL) { data, _, error in
+            if let error = error {
+                print("There was an error fetching the data. The url is \(finalURL), the error is \(error.localizedDescription)")
+                completion(nil)
+            }
+            guard let data = data else { return }
+            let pokemonImage = UIImage(data: data)
+            completion(pokemonImage)
+            
         }.resume()
     }
     
